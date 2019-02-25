@@ -1,34 +1,37 @@
 const path = require('path');
 const webpack = require('webpack');
-const uglify = require('uglifyjs-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const VueSSRClientPlugin = require('vue-server-renderer/client-plugin')
+const uglify = require('uglifyjs-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const indexCss = new ExtractTextPlugin("index/[name].css");
 const postcss = require('./plugins/postcss');
 const lessLoader = require('./plugins/less-loader');
 const sassLoader = require('./plugins/sass-loader');
 const cssLoader = require('./plugins/css-loader');
-const VueSSRServerPlugin = require('vue-server-renderer/server-plugin');
-
 
 module.exports = {
-    mode: "production",
-    target: "node",
-    entry: {
-        index: [path.resolve(".", "src/index/index.js"), "babel-polyfill"],
-    },
+    // 将 entry 指向应用程序的 server entry 文件
+    entry: path.resolve(".", "src/entry-client.js"),
+
+    // 这允许 webpack 以 Node 适用方式(Node-appropriate fashion)处理动态导入(dynamic import)，
+    // 并且还会在编译 Vue 组件时，
+    // 告知 `vue-loader` 输送面向服务器代码(server-oriented code)。
+    target: 'node',
+
+    // 对 bundle renderer 提供 source map 支持
+    devtool: 'source-map',
+
+    // 此处告知 server bundle 使用 Node 风格导出模块(Node-style exports)
     output: {
+        libraryTarget: 'commonjs2',
         path: path.resolve(".", "dist/"),
-        filename: 'index.js',
-        libraryTarget: "commonjs2"
-        // publicPath: path.resolve(".", "public/assets")
     },
     module: {
         rules: [
-            cssLoader,
             lessLoader,
             sassLoader,
+            cssLoader,
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
@@ -60,34 +63,7 @@ module.exports = {
             }
         ],
     },
-    resolve: {
-        alias: {
-            'vue$': 'vue/dist/vue.esm.js'
-        },
-        extensions: ['*', '.js', '.vue', '.json']
-    },
     optimization: { // 拆分代码大小
-        splitChunks: {
-            chunks: 'async',
-            minSize: 3000,
-            maxSize: 400000,
-            minChunks: 1,
-            maxAsyncRequests: 5,
-            maxInitialRequests: 3,
-            automaticNameDelimiter: '~',
-            name: true,
-            cacheGroups: {
-                vendors: {
-                    test: /[\\/]node_modules[\\/]/,
-                    priority: -10
-                },
-                default: {
-                    minChunks: 2,
-                    priority: -20,
-                    reuseExistingChunk: true
-                }
-            }
-        },
         minimizer: [
             new uglify({
                 uglifyOptions: {
@@ -104,15 +80,8 @@ module.exports = {
         ]
     },
     plugins: [
+        new VueSSRClientPlugin(),
         new VueLoaderPlugin(),
-        new VueSSRServerPlugin(),
-        // new HtmlWebpackPlugin({
-        //     filename: "index.html",
-        //     template:  path.resolve(".", "src/index/index.html")
-        // }),
         indexCss,
-        // new webpack.BannerPlugin({
-        //     banner: 'hello world'
-        // })
     ]
-};
+}
