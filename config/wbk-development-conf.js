@@ -1,37 +1,39 @@
 const path = require('path');
-const webpack = require('webpack');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const lessLoader = require('./plugins/less-loader');
-const sassLoader = require('./plugins/sass-loader');
-const cssLoader = require('./plugins/css-loader');
-
-
-
-
+const webpack = require('webpack');
 
 module.exports = {
     mode: "development",
-    entry: {
-        index: path.resolve(".", "src/entry-client.js")
-    },
+    entry: path.resolve(".", "src/entry-client.js"),
+    devtool: '#eval-source-map',
     output: {
         path: path.resolve(".", "dist/"),
-        filename: 'index.js',
+        filename: 'main.js'
     },
     module: {
         rules: [
-            lessLoader,
-            sassLoader,
-            cssLoader,
+            {
+                test: /\.css$/,
+                use: [
+                    'vue-style-loader',
+                    'css-loader'
+                ],
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    'vue-style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: { modules: true }
+                    },
+                    'sass-loader'
+                ]
+            },
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
-                options: {
-                    loaders: {
-                        // hotReload: true // 关闭热重载
-                    }
-                }
             },
             {
                 test: /\.js$/,
@@ -45,19 +47,21 @@ module.exports = {
                     name: '[name].[ext]?[hash]'
                 }
             }
-        ]
-    },
-    resolve: {
-        alias: {
-            'vue$': 'vue/dist/vue.esm.js'
-        },
-        extensions: ['*', '.js', '.vue', '.json']
+        ],
     },
     devServer: {
         inline: true,
         hot: true,
-        port:8080,
+        port:8085,
         open: true,
+        // proxy: {
+        //     '**': {
+        //         target: 'http://localhost',
+        //         changeOrigin: true,
+        //         secure: false,
+        //
+        //     }
+        // }
     },
     plugins: [
         new VueLoaderPlugin(),
@@ -68,5 +72,3 @@ module.exports = {
         new webpack.HotModuleReplacementPlugin(),
     ]
 }
-
-

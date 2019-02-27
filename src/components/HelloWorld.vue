@@ -1,6 +1,9 @@
 <template>
   <div class="hello">
+      <RouterView></RouterView>
     <h1>{{msg}}</h1>
+      <input type="text">
+      <img src="./../assets/logo.png" alt="">
     <p>
       For guides and recipes on how to configure / customize this project,<br>
       check out the
@@ -11,7 +14,7 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'HelloWo',
   props: {
     msg: String
   }

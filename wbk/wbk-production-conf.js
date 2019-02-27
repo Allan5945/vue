@@ -16,7 +16,7 @@ module.exports = {
     mode: "production",
     target: "node",
     entry: {
-        index: [path.resolve(".", "src/index/index.js"), "babel-polyfill"],
+        index: [path.resolve(".", "src/app.js")],
     },
     output: {
         path: path.resolve(".", "dist/"),

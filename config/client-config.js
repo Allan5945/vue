@@ -4,6 +4,7 @@ const VueSSRClientPlugin = require('vue-server-renderer/client-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
+
 module.exports = {
     // entry: './src/main.js',
     mode: "production",
@@ -16,23 +17,44 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.(sa|sc|c)ss$/,
+                test: /\.css$/,
                 use: [
                     MiniCssExtractPlugin.loader,
-                    'css-loader',
+                    'css-loader'
                 ],
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
+                        options: { modules: true }
+                    },
+                    'sass-loader'
+                ]
             },
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
+                options: {
+                    loaders: {}
+                    // other vue-loader options go here
+                }
             },
             {
                 test: /\.js$/,
                 loader: 'babel-loader',
                 exclude: /node_modules/
             },
-
-        ],
+            {
+                test: /\.(png|jpg|gif|svg)$/,
+                loader: 'file-loader',
+                options: {
+                    name: '[name].[ext]?[hash]'
+                }
+            }
+        ]
     },
     resolve: {
         alias: {
@@ -51,11 +73,10 @@ module.exports = {
             filename: "css/style.css",
             chunkFilename: "[id].css"
         }),
-        // new CleanWebpackPlugin([path.resolve(".", "dist/")],{
-        //     root: path.resolve("."),
-        //     verbose: true,
-        //     dry: false
-        // }),
-
+        new CleanWebpackPlugin([path.resolve(".", "dist/")],{
+            root: path.resolve("."),
+            verbose: true,
+            dry: false
+        }),
     ]
 }

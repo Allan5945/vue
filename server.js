@@ -3,13 +3,9 @@
 const fs = require('fs')
 const path = require('path')
 const express = require('express')
-var proxy = require('http-proxy-middleware');
 const { createBundleRenderer } = require('vue-server-renderer')
 
-const devServerBaseURL = process.env.DEV_SERVER_BASE_URL || 'http://localhost'
-const devServerPort = process.env.DEV_SERVER_PORT || 8081
-
-const app = express()
+const app = express();
 
 function createRenderer (bundle, options) {
   return createBundleRenderer(bundle, Object.assign(options, {
@@ -17,7 +13,7 @@ function createRenderer (bundle, options) {
   }))
 }
 
-let renderer
+let renderer;
 const templatePath = path.resolve(__dirname, './src/index.template.html')
 
 const bundle = require('./dist/vue-ssr-server-bundle.json')
@@ -26,37 +22,10 @@ const clientManifest = require('./dist/vue-ssr-client-manifest.json')
 renderer = createRenderer(bundle, {
   template,
   clientManifest
-})
-
-if (process.env.NODE_ENV !== 'production') {
-  app.use('/main*', proxy({
-    target: `${devServerBaseURL}:${devServerPort}`,
-    changeOrigin: true,
-    pathRewrite: function (path) {
-      return path.includes('main')
-        ? '/main.js'
-        : path
-    },
-    prependPath: false
-  }));
-
-  app.use('/*hot-update*', proxy({
-    target: `${devServerBaseURL}:${devServerPort}`,
-    changeOrigin: true,
-  }));
+});
 
 
-  app.use('/sockjs-node', proxy({
-    target: `${devServerBaseURL}:${devServerPort}`,
-    changeOrigin: true,
-    ws: true
-  }));
-}
-
-
-app.use('/js', express.static(path.resolve(__dirname, './dist/js')))
-app.use('/img', express.static(path.resolve(__dirname, './dist/img')))
-app.use('/css', express.static(path.resolve(__dirname, './dist/css')))
+app.use('/', express.static(path.resolve(__dirname, './dist')));
 
 app.get('*', (req, res) => {
 
@@ -83,6 +52,6 @@ app.get('*', (req, res) => {
   })
 })
 
-app.listen(devServerPort, () => {
-    console.log(`server started at localhost:${devServerPort}`)
+app.listen(8080, () => {
+    console.log(`server started at localhost:${8080}`)
 })

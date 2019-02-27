@@ -1,26 +1,35 @@
 const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const VueSSRServerPlugin = require('vue-server-renderer/server-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
-    // entry: './src/main.js',
     target: 'node',
     mode: "production",
     entry: path.resolve(".", "src/entry-server.js"),
     output: {
         libraryTarget: 'commonjs2',
-        path: path.resolve(__dirname, './dist'),
+        path: path.resolve(".", "dist/"),
         filename: 'main.js'
     },
     module: {
         rules: [
             {
-                test: /\.(sa|sc|c)ss$/,
+                test: /\.css$/,
                 use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader',
+                    'vue-style-loader',
+                    'css-loader'
                 ],
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    'vue-style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: { modules: true }
+                    },
+                    'sass-loader'
+                ]
             },
             {
                 test: /\.vue$/,
@@ -31,8 +40,14 @@ module.exports = {
                 loader: 'babel-loader',
                 exclude: /node_modules/
             },
-
-        ],
+            {
+                test: /\.(png|jpg|gif|svg)$/,
+                loader: 'file-loader',
+                options: {
+                    name: '[name].[ext]?[hash]'
+                }
+            }
+        ]
     },
     resolve: {
         alias: {
