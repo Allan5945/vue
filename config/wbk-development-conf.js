@@ -52,7 +52,7 @@ module.exports = {
     devServer: {
         inline: true,
         hot: true,
-        port:8085,
+        port:80,
         open: true,
         // proxy: {
         //     '**': {

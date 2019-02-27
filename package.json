@@ -4,10 +4,11 @@
   "description": "",
   "main": "wbk.conf.js",
   "scripts": {
-    "build:client": "webpack --config config/client-config.js",
     "dev:client": "webpack-dev-server --config config/wbk-development-conf.js",
+    "build:client": "webpack --config config/client-config.js",
     "build:server": "webpack --config config/server-config.js",
-    "build:server&client": "npm run build:client & npm run build:server"
+    "run:node": "node server.js",
+    "build:server&client": "npm run build:client & npm run build:server & npm run run:node"
   },
   "author": "",
   "license": "ISC",

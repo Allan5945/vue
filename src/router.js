@@ -1,8 +1,8 @@
 // router.js
 import Vue from 'vue'
 import Router from 'vue-router'
-// import HelloWorld from './components/HelloWorld.vue'
-const HelloWorld = resolve => require(['./components/HelloWorld.vue'], resolve);
+import HelloWorld from './components/HelloWorld.vue'
+// const HelloWorld = resolve => require(['./components/HelloWorld.vue'], resolve);
 const Test = resolve => require(['./components/Test.vue'], resolve);
 
 Vue.use(Router)
